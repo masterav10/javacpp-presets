@@ -41,7 +41,8 @@ case $PLATFORM in
         done < "$OUTPUT_C"
 
         # Step 3: Use the DEF and C file to create a DLL with appropriate bindings.
-
+        # cl.exe /GS /GL /W3 /Gy /Zc:wchar_t /Zi /Gm- /O2 /Fd"x64\Release\vc141.pdb" /Zc:inline /fp:precise /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_WINDLL" /D "_MBCS" /errorReport:prompt /WX- /Zc:forScope /Gd /Oi /MD /Fa"x64\Release\" /EHsc /nologo /Fo"x64\Release\" /Fp"x64\Release\DeviceList.pch" /diagnostics:classic
+        cl "$OUTPUT_C" -link -DLL -out:DecklinkAPI.dll -DEF:"$OUTPUT_DEF"
         ;;
     *)
         echo "Error: Platform \"$PLATFORM\" is not supported"
