@@ -7,6 +7,7 @@ if [[ -z "$PLATFORM" ]]; then
     exit
 fi
 
+rm -rf $PLATFORM
 mkdir -p $PLATFORM
 cd $PLATFORM
 INSTALL_PATH=`pwd`
@@ -28,7 +29,7 @@ case $PLATFORM in
 
         # Step 2: Create DEF file by extracting interface names.
         OUTPUT_C="$INSTALL_PATH/DeckLinkAPI_i.c"
-        OUTPUT_DEF="$INSTALL_PATH/DeviceList.def"
+        OUTPUT_DEF="$INSTALL_PATH/DeckLinkAPI.def"
 
         echo "LIBRARY    DECKLINK" > "$OUTPUT_DEF"
         echo "EXPORTS" >> "$OUTPUT_DEF"
@@ -41,8 +42,12 @@ case $PLATFORM in
         done < "$OUTPUT_C"
 
         # Step 3: Use the DEF and C file to create a DLL with appropriate bindings.
-        # cl.exe /GS /GL /W3 /Gy /Zc:wchar_t /Zi /Gm- /O2 /Fd"x64\Release\vc141.pdb" /Zc:inline /fp:precise /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_WINDLL" /D "_MBCS" /errorReport:prompt /WX- /Zc:forScope /Gd /Oi /MD /Fa"x64\Release\" /EHsc /nologo /Fo"x64\Release\" /Fp"x64\Release\DeviceList.pch" /diagnostics:classic
-        cl "$OUTPUT_C" -link -DLL -out:DecklinkAPI.dll -DEF:"$OUTPUT_DEF"
+        cl "$OUTPUT_C" -link -DLL -out:DeckLinkAPI.dll -DEF:"$OUTPUT_DEF"
+
+        OUTPUT_LOCATION="$SDK_LOCATION/$PLATFORM"
+        rm -rf "$OUTPUT_LOCATION"
+        mkdir -p "$OUTPUT_LOCATION"
+        cp -r "$INSTALL_PATH/." "$OUTPUT_LOCATION"
         ;;
     *)
         echo "Error: Platform \"$PLATFORM\" is not supported"
