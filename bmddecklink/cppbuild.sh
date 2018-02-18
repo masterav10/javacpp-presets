@@ -44,10 +44,14 @@ case $PLATFORM in
         # Step 3: Use the DEF and C file to create a DLL with appropriate bindings.
         cl "$OUTPUT_C" -link -DLL -out:DeckLinkAPI.dll -DEF:"$OUTPUT_DEF"
 
-        OUTPUT_LOCATION="$SDK_LOCATION/$PLATFORM"
-        rm -rf "$OUTPUT_LOCATION"
-        mkdir -p "$OUTPUT_LOCATION"
-        cp -r "$INSTALL_PATH/." "$OUTPUT_LOCATION"
+        mkdir "bin"
+        mv *.dll ./bin
+
+        mkdir "include"
+        mv *.h include
+
+        mkdir "lib"
+        mv *.lib lib
         ;;
     *)
         echo "Error: Platform \"$PLATFORM\" is not supported"
