@@ -13,10 +13,27 @@ download ftp://ftp.gnu.org/gnu/gsl/gsl-$GSL_VERSION.tar.gz gsl-$GSL_VERSION.tar.
 mkdir -p $PLATFORM
 cd $PLATFORM
 INSTALL_PATH=`pwd`
+
+OPENBLAS_PATH="$INSTALL_PATH/../../../openblas/cppbuild/$PLATFORM/"
+
+if [[ -n "${BUILD_PATH:-}" ]]; then
+    PREVIFS="$IFS"
+    IFS="$BUILD_PATH_SEPARATOR"
+    for P in $BUILD_PATH; do
+        if [[ -f "$P/include/openblas_config.h" ]]; then
+            OPENBLAS_PATH="$P"
+        fi
+    done
+    IFS="$PREVIFS"
+fi
+
+OPENBLAS_PATH="${OPENBLAS_PATH//\\//}"
+
 echo "Decompressing archives..."
 tar --totals -xzf ../gsl-$GSL_VERSION.tar.gz
 cd gsl-$GSL_VERSION
 
+export GSL_LDFLAGS="-L$OPENBLAS_PATH/ -L$OPENBLAS_PATH/lib/ -lopenblas"
 case $PLATFORM in
     android-arm)
         export AR="$ANDROID_BIN-ar"
@@ -28,7 +45,6 @@ case $PLATFORM in
         export CFLAGS="$CPPFLAGS -fPIC -ffunction-sections -funwind-tables -fstack-protector -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 -Dlog2\(x\)=\(log\(x\)/1.44269504088896340736\)"
         export LDFLAGS="-nostdlib -Wl,--fix-cortex-a8 -z text"
         export LIBS="-lgcc -ldl -lz -lm -lc"
-        export GSL_LDFLAGS="-Lcblas/.libs/ -lgslcblas"
         patch -Np1 < ../../../gsl-$GSL_VERSION-android.patch
         ./configure --prefix=$INSTALL_PATH --host="arm-linux-androideabi" --with-sysroot="$ANDROID_ROOT"
         make -j $MAKEJ
@@ -44,7 +60,6 @@ case $PLATFORM in
         export CFLAGS="$CPPFLAGS -fPIC -ffunction-sections -funwind-tables -mssse3 -mfpmath=sse -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 -Dlog2\(x\)=\(log\(x\)/1.44269504088896340736\)"
         export LDFLAGS="-nostdlib -z text"
         export LIBS="-lgcc -ldl -lz -lm -lc"
-        export GSL_LDFLAGS="-Lcblas/.libs/ -lgslcblas"
         patch -Np1 < ../../../gsl-$GSL_VERSION-android.patch
         ./configure --prefix=$INSTALL_PATH --host="i686-linux-android" --with-sysroot="$ANDROID_ROOT"
         make -j $MAKEJ
@@ -61,6 +76,7 @@ case $PLATFORM in
         make install-strip
         ;;
     linux-armhf)
+        export LDFLAGS="-Wl,-rpath-link,$(dirname $(dirname $(which arm-linux-gnueabihf-gcc)))/arm-linux-gnueabihf/lib/"
         ./configure --prefix=$INSTALL_PATH --host=arm-linux-gnueabihf
         make -j $MAKEJ
         make install-strip
@@ -83,11 +99,13 @@ case $PLATFORM in
         make install-strip
         ;;
     windows-x86)
+        patch -Np1 < ../../../gsl-$GSL_VERSION-windows.patch
         ./configure --prefix=$INSTALL_PATH CC="gcc -m32 -static-libgcc"
         make -j $MAKEJ
         make install-strip
         ;;
     windows-x86_64)
+        patch -Np1 < ../../../gsl-$GSL_VERSION-windows.patch
         ./configure --prefix=$INSTALL_PATH CC="gcc -m64 -static-libgcc"
         make -j $MAKEJ
         make install-strip

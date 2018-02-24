@@ -117,16 +117,17 @@ Each child module in turn relies by default on the included [`cppbuild.sh` scrip
  * HDF5 1.10.1  https://support.hdfgroup.org/HDF5/
  * MKL 2018.1  https://software.intel.com/intel-mkl
  * OpenBLAS 0.2.20  http://www.openblas.net/
+ * ARPACK-NG  https://github.com/opencollab/arpack-ng
  * FFTW 3.3.7  http://www.fftw.org/download.html
  * GSL 2.4  http://www.gnu.org/software/gsl/#downloading
  * LLVM 5.0.x  http://llvm.org/releases/download.html
  * libpostal 1.1-alpha  https://github.com/openvenues/libpostal
- * Leptonica 1.74.4  http://www.leptonica.org/download.html
+ * Leptonica 1.75.3  http://www.leptonica.org/download.html
  * Tesseract 3.05.01  https://github.com/tesseract-ocr/tesseract
  * Caffe 1.0  https://github.com/BVLC/caffe
  * CUDA 9.1  https://developer.nvidia.com/cuda-downloads
  * MXnet 1.0.0  https://github.com/dmlc/mxnet
- * TensorFlow 1.5.0  https://github.com/tensorflow/tensorflow
+ * TensorFlow 1.6.0-rc1  https://github.com/tensorflow/tensorflow
  * The Arcade Learning Environment 0.6.0  https://github.com/mgbellemare/Arcade-Learning-Environment
  * LiquidFun  http://google.github.io/liquidfun/
  * Skia  https://skia.org
