@@ -8,20 +8,19 @@ import org.bytedeco.javacpp.tools.*;
 
 @Properties(names = {"windows-x86_64"},
             target = "org.bytedeco.javacpp.bmddecklink",
-            value = {@Platform(include = {"Unknwnbase.h", "<DeckLinkAPI_h.h>"}),
+            value = {@Platform(include = {"<DeckLinkAPI_h.h>", "<DeckLinkAPI_i.c>"}),
                         @Platform(value = "windows-x86_64",
-                                  includepath = {
-                                        "C:/Program Files (x86)/Windows Kits/10/Include/10.0.16299.0/um"},
-                                  linkpath = {
-                                        "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.16299.0/um/x64"})})
+                                  link = {
+                                        "ole32", "oleaut32", "amstrmid", "strmiids", "uuid"
+                                  })})
 public class bmddecklink implements InfoMapper
 {
     public void map(InfoMap infoMap)
     {
-        infoMap
-                .put(new Info("IID_IUnknown")
-                        .valueTypes("IUnknown")
-                        .pointerTypes("@ByPtrPtr IUnknown"));
+        infoMap.put(new Info("DeckLinkAPI_i.c").skip())
+               .put(new Info("_WIN32_WINNT").cppTypes().define(false))
+               .put(new Info("std::vector<std::string>").pointerTypes("StringVector").define())
+               .put(new Info("GUID").cast().pointerTypes("Pointer"))
+               .put(new Info("long", "unsigned long").cast().valueTypes("int").pointerTypes("IntPointer", "IntBuffer", "int[]"));
     }
-
 }
