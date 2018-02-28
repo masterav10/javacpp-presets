@@ -1,26 +1,31 @@
 package org.bytedeco.javacpp.presets;
 
-import org.bytedeco.javacpp.FunctionPointer;
-import org.bytedeco.javacpp.Loader;
-import org.bytedeco.javacpp.Pointer;
-import org.bytedeco.javacpp.annotation.*;
-import org.bytedeco.javacpp.tools.*;
+import org.bytedeco.javacpp.annotation.Platform;
+import org.bytedeco.javacpp.annotation.Properties;
+import org.bytedeco.javacpp.tools.Info;
+import org.bytedeco.javacpp.tools.InfoMap;
+import org.bytedeco.javacpp.tools.InfoMapper;
 
-@Properties(names = {"windows-x86_64"},
-            target = "org.bytedeco.javacpp.bmddecklink",
-            value = {@Platform(include = {"<DeckLinkAPI_h.h>", "<DeckLinkAPI_i.c>"}),
-                        @Platform(value = "windows-x86_64",
-                                  link = {
-                                        "ole32", "oleaut32", "amstrmid", "strmiids", "uuid"
-                                  })})
+@Properties(target="org.bytedeco.javacpp.bmddecklink", value={
+        @Platform(value="windows",
+                  include = {
+                        "Unknwnbase.h", "<DeckLinkAPI_h.h>"
+                  },
+                  includepath = {
+                        "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.16299.0\\um"
+                  },
+                  link = {
+                        "comsuppw", "ole32", "oleaut32", "uuid"
+                  })
+})
 public class bmddecklink implements InfoMapper
 {
     public void map(InfoMap infoMap)
     {
-        infoMap.put(new Info("DeckLinkAPI_i.c").skip())
-               .put(new Info("_WIN32_WINNT").cppTypes().define(false))
-               .put(new Info("std::vector<std::string>").pointerTypes("StringVector").define())
-               .put(new Info("GUID").cast().pointerTypes("Pointer"))
-               .put(new Info("long", "unsigned long").cast().valueTypes("int").pointerTypes("IntPointer", "IntBuffer", "int[]"));
+        infoMap.put(new Info("long", "unsigned long")
+                .cast()
+                .valueTypes("int")
+                .pointerTypes("IntPointer", "IntBuffer", "int[]"));
     }
 }
+
