@@ -41,13 +41,28 @@ case $PLATFORM in
         export CPP="$ANDROID_BIN-cpp"
         export CC="$ANDROID_BIN-gcc"
         export STRIP="$ANDROID_BIN-strip"
-        export CPPFLAGS="--sysroot=$ANDROID_ROOT -DANDROID"
-        export CFLAGS="$CPPFLAGS -fPIC -ffunction-sections -funwind-tables -fstack-protector -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 -Dlog2\(x\)=\(log\(x\)/1.44269504088896340736\)"
-        export LDFLAGS="-nostdlib -Wl,--fix-cortex-a8 -z text"
+        export CPPFLAGS="$ANDROID_FLAGS"
+        export CFLAGS="$ANDROID_FLAGS"
+        export LDFLAGS="-Wl,--fix-cortex-a8 -z text"
         export LIBS="-lgcc -ldl -lz -lm -lc"
         patch -Np1 < ../../../gsl-$GSL_VERSION-android.patch
         ./configure --prefix=$INSTALL_PATH --host="arm-linux-androideabi" --with-sysroot="$ANDROID_ROOT"
-        make -j $MAKEJ
+        make -j $MAKEJ V=0
+        make install-strip
+        ;;
+    android-arm64)
+        export AR="$ANDROID_BIN-ar"
+        export RANLIB="$ANDROID_BIN-ranlib"
+        export CPP="$ANDROID_BIN-cpp"
+        export CC="$ANDROID_BIN-gcc"
+        export STRIP="$ANDROID_BIN-strip"
+        export CPPFLAGS="$ANDROID_FLAGS"
+        export CFLAGS="$ANDROID_FLAGS"
+        export LDFLAGS="-z text"
+        export LIBS="-lgcc -ldl -lz -lm -lc"
+        patch -Np1 < ../../../gsl-$GSL_VERSION-android.patch
+        ./configure --prefix=$INSTALL_PATH --host="aarch64-linux-android" --with-sysroot="$ANDROID_ROOT"
+        make -j $MAKEJ V=0
         make install-strip
         ;;
      android-x86)
@@ -56,29 +71,44 @@ case $PLATFORM in
         export CPP="$ANDROID_BIN-cpp"
         export CC="$ANDROID_BIN-gcc"
         export STRIP="$ANDROID_BIN-strip"
-        export CPPFLAGS="--sysroot=$ANDROID_ROOT -DANDROID"
-        export CFLAGS="$CPPFLAGS -fPIC -ffunction-sections -funwind-tables -mssse3 -mfpmath=sse -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 -Dlog2\(x\)=\(log\(x\)/1.44269504088896340736\)"
-        export LDFLAGS="-nostdlib -z text"
+        export CPPFLAGS="$ANDROID_FLAGS"
+        export CFLAGS="$ANDROID_FLAGS"
+        export LDFLAGS="-z text"
         export LIBS="-lgcc -ldl -lz -lm -lc"
         patch -Np1 < ../../../gsl-$GSL_VERSION-android.patch
         ./configure --prefix=$INSTALL_PATH --host="i686-linux-android" --with-sysroot="$ANDROID_ROOT"
-        make -j $MAKEJ
+        make -j $MAKEJ V=0
+        make install-strip
+        ;;
+     android-x86_64)
+        export AR="$ANDROID_BIN-ar"
+        export RANLIB="$ANDROID_BIN-ranlib"
+        export CPP="$ANDROID_BIN-cpp"
+        export CC="$ANDROID_BIN-gcc"
+        export STRIP="$ANDROID_BIN-strip"
+        export CPPFLAGS="$ANDROID_FLAGS"
+        export CFLAGS="$ANDROID_FLAGS"
+        export LDFLAGS="-z text"
+        export LIBS="-lgcc -ldl -lz -lm -lc"
+        patch -Np1 < ../../../gsl-$GSL_VERSION-android.patch
+        ./configure --prefix=$INSTALL_PATH --host="x86_64-linux-android" --with-sysroot="$ANDROID_ROOT"
+        make -j $MAKEJ V=0
         make install-strip
         ;;
     linux-x86)
         ./configure --prefix=$INSTALL_PATH CC="$OLDCC -m32"
-        make -j $MAKEJ
+        make -j $MAKEJ V=0
         make install-strip
         ;;
     linux-x86_64)
         ./configure --prefix=$INSTALL_PATH CC="$OLDCC -m64"
-        make -j $MAKEJ
+        make -j $MAKEJ V=0
         make install-strip
         ;;
     linux-armhf)
         export LDFLAGS="-Wl,-rpath-link,$(dirname $(dirname $(which arm-linux-gnueabihf-gcc)))/arm-linux-gnueabihf/lib/"
         ./configure --prefix=$INSTALL_PATH --host=arm-linux-gnueabihf
-        make -j $MAKEJ
+        make -j $MAKEJ V=0
         make install-strip
         ;;
     linux-ppc64le)
@@ -89,25 +119,25 @@ case $PLATFORM in
         else
           ./configure --prefix=$INSTALL_PATH --host=powerpc64le-linux-gnu --build=ppc64le-linux CC="powerpc64le-linux-gnu-gcc -m64"
         fi
-        make -j $MAKEJ
+        make -j $MAKEJ V=0
         make install-strip
         ;;
     macosx-*)
         patch -Np1 < ../../../gsl-$GSL_VERSION-macosx.patch
         ./configure --prefix=$INSTALL_PATH
-        make -j $MAKEJ
+        make -j $MAKEJ V=0
         make install-strip
         ;;
     windows-x86)
         patch -Np1 < ../../../gsl-$GSL_VERSION-windows.patch
         ./configure --prefix=$INSTALL_PATH CC="gcc -m32 -static-libgcc"
-        make -j $MAKEJ
+        make -j $MAKEJ V=0
         make install-strip
         ;;
     windows-x86_64)
         patch -Np1 < ../../../gsl-$GSL_VERSION-windows.patch
         ./configure --prefix=$INSTALL_PATH CC="gcc -m64 -static-libgcc"
-        make -j $MAKEJ
+        make -j $MAKEJ V=0
         make install-strip
         ;;
     *)
